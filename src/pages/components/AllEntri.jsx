@@ -5,7 +5,7 @@ const AllEntri = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch("http://localhost:4001/entri")
+    fetch("https://backend-sistem-tamu.vercel.app/entri")
       .then((res) => res.json())
       .then((data) => {
         setEntries(data);
