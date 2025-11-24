@@ -46,6 +46,30 @@ const AllEntri = () => {
   link.click();
 };
 
+const exportPDF = () => {
+  const printContent = document.querySelector(".table-container").innerHTML;
+  const newWindow = window.open("", "", "width=900,height=700");
+
+  newWindow.document.write(`
+    <html>
+      <head>
+        <title>Export PDF</title>
+        <style>
+          table { width: 100%; border-collapse: collapse; }
+          th, td { border: 1px solid black; padding: 8px; font-size: 12px; }
+          th { background: #f2f2f2; }
+        </style>
+      </head>
+      <body>
+        <h3>Data Buku Tamu</h3>
+        ${printContent}
+      </body>
+    </html>
+  `);
+
+  newWindow.document.close();
+  newWindow.print();
+};
 
   useEffect(() => {
     fetch("https://backend-sistem-tamu.vercel.app/entri")
@@ -69,7 +93,10 @@ const AllEntri = () => {
 <button onClick={exportCSV} className="btn btn-success btn-sm">
   📊 Export CSV
 </button>
-          <button className="btn btn-success btn-sm">📄 Export PDF</button>
+          <button onClick={exportPDF} className="btn btn-success btn-sm">
+  📄 Export PDF
+</button>
+
           <button className="btn btn-primary btn-sm">🖨️ Print</button>
         </div>
 
