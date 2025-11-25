@@ -57,7 +57,7 @@ const exportPDF = () => {
         <style>
           table { width: 100%; border-collapse: collapse; }
           th, td { border: 1px solid black; padding: 8px; font-size: 12px; }
-          th { background: #f2f2f2; }
+          th { background: #f2f2f2ff; }
         </style>
       </head>
       <body>
