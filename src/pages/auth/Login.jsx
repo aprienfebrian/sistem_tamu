@@ -19,14 +19,24 @@ const Login = () => {
 
     try {
       const resp = await fetch(
-        "https://backend-sistem-tamu.vercel.app/auth.login",
+        "https://backend-sistem-tamu.vercel.app/auth/login",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: form,
+          body: JSON.stringify(form),
         }
       );
-      console.log(resp);
+      const data = await resp.json();
+      console.log(data);
+
+      if (data) {
+        if (typeof data === "string") {
+          alert(data);
+          return;
+        }
+
+        window.location.href = "/";
+      }
     } catch (error) {
       console.error("Error", error);
     }
