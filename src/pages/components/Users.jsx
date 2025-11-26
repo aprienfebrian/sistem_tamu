@@ -7,7 +7,7 @@ const Users = () => {
 
   // FETCH DATA
   useEffect(() => {
-    fetch("http://localhost:4001/api/users")
+    fetch("https://backend-sistem-tamu.vercel.app/users")
       .then((res) => res.json())
       .then((data) => setUsers(data))
       .catch((err) => console.error("Error fetch users:", err));

@@ -1,6 +1,37 @@
+import { useState } from "react";
 import "../../App.css";
 
 const Login = () => {
+  const [form, setForm] = useState({
+    email: "",
+    password: "",
+  });
+
+  const handleChange = (e) => {
+    setForm({
+      ...form,
+      [e.target.name]: e.target.value,
+    });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    try {
+      const resp = await fetch(
+        "https://backend-sistem-tamu.vercel.app/auth.login",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: form,
+        }
+      );
+      console.log(resp);
+    } catch (error) {
+      console.error("Error", error);
+    }
+  };
+
   return (
     <div className="container_auth">
       <div className="card login-card">
@@ -11,15 +42,17 @@ const Login = () => {
 
         <div id="loginAlert" className="alert"></div>
 
-        <form id="loginForm">
+        <form onSubmit={handleSubmit}>
           <div className="form-group">
             <label className="form-label">Email</label>
             <input
               type="text"
               className="form-control"
-              id="loginEmail"
+              name="email"
               required
               placeholder="admin@buku.com / user@buku.com"
+              value={form.email}
+              onChange={handleChange}
             />
           </div>
 
@@ -28,9 +61,11 @@ const Login = () => {
             <input
               type="password"
               className="form-control"
-              id="loginPassword"
               required
+              name="password"
               placeholder="admin123 / user123"
+              value={form.password}
+              onChange={handleChange}
             />
           </div>
 
