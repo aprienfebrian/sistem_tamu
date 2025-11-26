@@ -4,6 +4,73 @@ const AllEntri = () => {
   const [entries, setEntries] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  const exportCSV = () => {
+  if (entries.length === 0) return alert("Tidak ada data untuk diexport!");
+
+  // Buat header CSV
+  const header = [
+    "Tanggal",
+    "Nama",
+    "Identitas",
+    "Jumlah Tamu",
+    "Institusi",
+    "Keperluan",
+    "Bertemu",
+    "Status"
+  ];
+
+  // Convert array entries → CSV rows
+  const rows = entries.map(e => [
+    new Date(e.tanggal).toLocaleString(),
+    e.nama,
+    e.identitas,
+    e.jumlah_tamu,
+    e.institusi,
+    e.keperluan,
+    e.bertemu,
+    e.status
+  ]);
+
+  // Gabung header + rows
+  const csvContent =
+    [header, ...rows].map(row => row.join(",")).join("\n");
+
+  // Buat blob file
+  const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+  const url = URL.createObjectURL(blob);
+
+  // Buat link download
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = "data_buku_tamu.csv";
+  link.click();
+};
+
+const exportPDF = () => {
+  const printContent = document.querySelector(".table-container").innerHTML;
+  const newWindow = window.open("", "", "width=900,height=700");
+
+  newWindow.document.write(`
+    <html>
+      <head>
+        <title>Export PDF</title>
+        <style>
+          table { width: 100%; border-collapse: collapse; }
+          th, td { border: 1px solid black; padding: 8px; font-size: 12px; }
+          th { background: #f2f2f2ff; }
+        </style>
+      </head>
+      <body>
+        <h3>Data Buku Tamu</h3>
+        ${printContent}
+      </body>
+    </html>
+  `);
+
+  newWindow.document.close();
+  newWindow.print();
+};
+
   useEffect(() => {
     fetch("https://backend-sistem-tamu.vercel.app/entri")
       .then((res) => res.json())
@@ -23,8 +90,13 @@ const AllEntri = () => {
         <h2 className="card-title">Semua Entri Buku Tamu</h2>
 
         <div className="export-btns">
-          <button className="btn btn-success btn-sm">📊 Export CSV</button>
-          <button className="btn btn-success btn-sm">📄 Export PDF</button>
+<button onClick={exportCSV} className="btn btn-success btn-sm">
+  📊 Export CSV
+</button>
+          <button onClick={exportPDF} className="btn btn-success btn-sm">
+  📄 Export PDF
+</button>
+
           <button className="btn btn-primary btn-sm">🖨️ Print</button>
         </div>
 
@@ -102,3 +174,6 @@ const AllEntri = () => {
 };
 
 export default AllEntri;
+
+
+

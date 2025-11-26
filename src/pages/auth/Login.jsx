@@ -40,8 +40,6 @@ const Login = () => {
           <p className="login-subtitle">Sistem Manajemen Tamu Digital</p>
         </div>
 
-        <div id="loginAlert" className="alert"></div>
-
         <form onSubmit={handleSubmit}>
           <div className="form-group">
             <label className="form-label">Email</label>
