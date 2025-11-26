@@ -6,6 +6,7 @@ const Register = () => {
     email: "",
     telepon: "",
     role: "",
+    alamat: "",
     password: "",
   });
 
