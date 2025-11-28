@@ -1,6 +1,12 @@
-import React from "react";
+import React, { useEffect } from "react";
 
 const Settings = () => {
+  useEffect(() => {
+    const token = localStorage.getItem("sistem-token");
+    if (!token) {
+      window.location.href = "/login";
+    }
+  }, []);
   return (
     <div class="container">
       <div className="card">

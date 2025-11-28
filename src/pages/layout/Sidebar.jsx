@@ -1,4 +1,11 @@
 const Sidebar = ({ open, onClose }) => {
+  const resp = localStorage.getItem("sistem-token");
+  const user = JSON.parse(resp);
+  const logout = () => {
+    localStorage.removeItem("sistem-token"); // hapus token
+    window.location.href = "/login"; // arahkan ke login
+  };
+
   return (
     open && (
       <nav className="container nav-menu">
@@ -12,9 +19,9 @@ const Sidebar = ({ open, onClose }) => {
               A
             </div>
             <div>
-              <div id="navUserName">User Name</div>
+              <div id="navUserName">{user.nama}</div>
               <div id="navUserRole" className="nav_top_3">
-                Role
+                {user.role}
               </div>
             </div>
           </div>
@@ -75,7 +82,7 @@ const Sidebar = ({ open, onClose }) => {
           <span className="nav-text">Pengaturan</span>
         </button>
 
-        <button className="nav-item nav-logout" onclick="logout()">
+        <button className="nav-item nav-logout" onClick={logout}>
           <span className="nav-icon">🚪</span>
           <span className="nav-text">Logout</span>
         </button>

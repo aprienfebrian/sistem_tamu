@@ -1,7 +1,14 @@
+import { useEffect } from "react";
 import "../App.css";
-import Header from "./layout/Header";
 
 const App = () => {
+  useEffect(() => {
+    const token = localStorage.getItem("sistem-token");
+    if (!token) {
+      window.location.href = "/login";
+    }
+  }, []);
+
   return (
     <>
       <div>

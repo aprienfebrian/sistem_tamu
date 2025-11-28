@@ -1,6 +1,8 @@
 import React, { useState } from "react";
+import LoadingDots from "../../utils/Loading";
 
 const Register = () => {
+  const [login, setLogin] = useState(false);
   const [form, setForm] = useState({
     nama: "",
     email: "",
@@ -20,6 +22,7 @@ const Register = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     console.log(form);
+    setLogin(true);
 
     try {
       const resp = await fetch(
@@ -38,6 +41,8 @@ const Register = () => {
       }
     } catch (error) {
       console.error("Error", error);
+    } finally {
+      setLogin(false);
     }
   };
 
@@ -120,9 +125,19 @@ const Register = () => {
             />
           </div>
 
-          <button type="submit" className="btn btn-primary btn_daftar_akun">
-            Daftar
+          <button
+            type="submit"
+            className={`btn btn-${
+              login ? "secondary" : "primary"
+            } btn_daftar_akun`}
+          >
+            {login ? <LoadingDots size={12} color="#fff" /> : "Daftar"}
           </button>
+          <a href="/login">
+            <button type="button" className="btn btn-secondary btn_daftar_akun">
+              Sudah Punya Akun
+            </button>
+          </a>
         </form>
       </div>
     </div>

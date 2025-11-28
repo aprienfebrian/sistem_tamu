@@ -67,6 +67,10 @@ body {
   --color-error: #ff3366;
   --color-warning: #ffaa00;
   --color-info: #00aaff; /* New color for completed/info */
+  --dot-size: 10px;
+  --dot-gap: 8px;
+  --dot-color: #333;
+  --duration: 0.8s;
 }
 
 /* LIGHT THEME VARIABLES */
@@ -1226,4 +1230,57 @@ input:checked + .slider:before {
   align-items: center;
   justify-content: center;
   padding: 2rem;
+}
+
+.loader-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+}
+
+.dots {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--dot-gap);
+  font-size: 0;
+}
+
+.dot {
+  width: var(--dot-size);
+  height: var(--dot-size);
+  border-radius: 50%;
+  background: var(--dot-color);
+  opacity: 0.2;
+  transform: translateY(0);
+  animation: bounce var(--duration) infinite ease-in-out;
+}
+
+.dot:nth-child(1) {
+  animation-delay: 0s;
+}
+.dot:nth-child(2) {
+  animation-delay: calc(var(--duration) / 3);
+}
+.dot:nth-child(3) {
+  animation-delay: calc(var(--duration) / 1.5);
+}
+
+@keyframes bounce {
+  0% {
+    opacity: 0.2;
+    transform: translateY(0);
+  }
+  30% {
+    opacity: 1;
+    transform: translateY(-6px);
+  }
+  60% {
+    opacity: 0.6;
+    transform: translateY(0);
+  }
+  100% {
+    opacity: 0.2;
+    transform: translateY(0);
+  }
 }
