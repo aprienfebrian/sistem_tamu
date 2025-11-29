@@ -11,7 +11,16 @@ const AllEntri = () => {
   const openViewModal = (entry) => setSelectedEntry(entry);
   const closeViewModal = () => setSelectedEntry(null);
 
-  const openEditModal = (entry) => setEditEntry({ ...entry });
+  const openEditModal = (entry) => {
+    setEditEntry({
+      id: entry.id,
+      nama: entry.nama,
+      institusi: entry.institusi,
+      keperluan: entry.keperluan,
+      status: entry.status || "pending",
+    });
+  };
+
   const closeEditModal = () => setEditEntry(null);
 
   const handleEditChange = (e) => {
@@ -31,9 +40,10 @@ const AllEntri = () => {
     }
   };
 
-  // Export CSV
+  // EXPORT CSV
   const exportCSV = () => {
     if (entries.length === 0) return alert("Tidak ada data untuk diexport!");
+
     const header = [
       "Tanggal",
       "Nama",
@@ -56,7 +66,7 @@ const AllEntri = () => {
       e.status,
     ]);
 
-    const csvContent = [header, ...rows].map((row) => row.join(",")).join("\n");
+    const csvContent = [header, ...rows].map((r) => r.join(",")).join("\n");
     const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
     const url = URL.createObjectURL(blob);
 
@@ -66,6 +76,7 @@ const AllEntri = () => {
     link.click();
   };
 
+  // EXPORT PDF
   const exportPDF = () => {
     const printContent = document.querySelector(".table-container").innerHTML;
     const newWindow = window.open("", "", "width=900,height=700");
@@ -91,10 +102,12 @@ const AllEntri = () => {
     newWindow.print();
   };
 
+  // FETCH DATA
   useEffect(() => {
     fetch("https://backend-sistem-tamu.vercel.app/entri")
       .then((res) => res.json())
       .then((data) => {
+        console.log("DATA FROM API:", data);
         setEntries(data);
         setLoading(false);
       });
@@ -105,8 +118,8 @@ const AllEntri = () => {
       <div className="card">
         <h2 className="card-title">Semua Entri Buku Tamu</h2>
 
-        <div className="export-btns">
-          <button onClick={exportCSV} className="btn btn-success btn-sm">
+        <div className="export-btns mb-3">
+          <button onClick={exportCSV} className="btn btn-success btn-sm me-2">
             📊 Export CSV
           </button>
           <button onClick={exportPDF} className="btn btn-success btn-sm">
@@ -176,15 +189,17 @@ const AllEntri = () => {
         </div>
       </div>
 
-      {/* Modal Lihat */}
+      {/* == MODAL LIHAT == */}
       {selectedEntry && (
         <div className="modal show d-block" tabIndex="-1">
           <div className="modal-dialog">
             <div className="modal-content p-3">
               <h4>Detail Entri</h4>
+
               <p><strong>Nama:</strong> {selectedEntry.nama}</p>
               <p><strong>Institusi:</strong> {selectedEntry.institusi}</p>
               <p><strong>Keperluan:</strong> {selectedEntry.keperluan}</p>
+
               <button className="btn btn-secondary" onClick={closeViewModal}>
                 Tutup
               </button>
@@ -193,59 +208,57 @@ const AllEntri = () => {
         </div>
       )}
 
-      {/* Modal Edit */}
-{editEntry && (
-  <div className="modal show d-block" tabIndex="-1">
-    <div className="modal-dialog">
-      <div className="modal-content p-3">
-        <h4>Edit Entri</h4>
+      {/* == MODAL EDIT == */}
+      {editEntry && (
+        <div className="modal show d-block" tabIndex="-1">
+          <div className="modal-dialog">
+            <div className="modal-content p-3">
+              <h4>Edit Entri</h4>
 
-        <input
-          className="form-control mb-2"
-          name="nama"
-          value={editEntry.nama}
-          onChange={handleEditChange}
-        />
+              <input
+                className="form-control mb-2"
+                name="nama"
+                value={editEntry.nama}
+                onChange={handleEditChange}
+              />
 
-        <input
-          className="form-control mb-2"
-          name="institusi"
-          value={editEntry.institusi}
-          onChange={handleEditChange}
-        />
+              <input
+                className="form-control mb-2"
+                name="institusi"
+                value={editEntry.institusi}
+                onChange={handleEditChange}
+              />
 
-        <textarea
-          className="form-control mb-2"
-          name="keperluan"
-          value={editEntry.keperluan}
-          onChange={handleEditChange}
-        />
+              <textarea
+                className="form-control mb-2"
+                name="keperluan"
+                value={editEntry.keperluan}
+                onChange={handleEditChange}
+              />
 
-        {/* === SELECT STATUS === */}
-        <label className="form-label">Status</label>
-        <select
-          className="form-control mb-3"
-          name="status"
-          value={editEntry.status}
-          onChange={handleEditChange}
-        >
-          <option value="pending">Pending</option>
-          <option value="approved">Approved</option>
-          <option value="selesai">Selesai</option>
-        </select>
+              <label className="form-label">Status</label>
+              <select
+                className="form-control mb-3"
+                name="status"
+                value={editEntry.status}
+                onChange={handleEditChange}
+              >
+                <option value="pending">Pending</option>
+                <option value="approved">Approved</option>
+                <option value="selesai">Selesai</option>
+              </select>
 
-        <button className="btn btn-primary me-2" onClick={saveEditChanges}>
-          Simpan
-        </button>
+              <button className="btn btn-primary me-2" onClick={saveEditChanges}>
+                Simpan
+              </button>
 
-        <button className="btn btn-secondary" onClick={closeEditModal}>
-          Batal
-        </button>
-      </div>
-    </div>
-  </div>
-)}
-
+              <button className="btn btn-secondary" onClick={closeEditModal}>
+                Batal
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
