@@ -6,6 +6,44 @@ const Users = () => {
   const [search, setSearch] = useState("");
   const [filterRole, setFilterRole] = useState("");
   const [loading, setLoading] = useState(true);
+  const [editEntry, setEditEntry] = useState(null);
+
+  const openEditModal = ({ id, role }) => {
+    setEditEntry({ id, role });
+    console.log(editEntry);
+  };
+  const closeEditModal = () => setEditEntry(null);
+
+  const handleEditChange = (e) => {
+    setEditEntry({ ...editEntry, [e.target.name]: e.target.value });
+  };
+  const saveEditChanges = async (e) => {
+    e.preventDefault();
+    const { id, ...payload } = editEntry;
+    console.log(payload);
+
+    try {
+      const response = await fetch(
+        `https://backend-sistem-tamu.vercel.app/users/${Number(id)}`,
+        {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Gagal menyimpan perubahan ke server");
+      }
+
+      // Update state lokal setelah berhasil
+      closeEditModal();
+      alert("Data berhasil diperbarui!");
+    } catch (err) {
+      console.error("Gagal menyimpan perubahan:", err);
+      alert("Gagal menyimpan perubahan! Silakan coba lagi.");
+    }
+  };
 
   // FETCH DATA
   useEffect(() => {
@@ -13,7 +51,8 @@ const Users = () => {
       .then((res) => res.json())
       .then((data) => {
         setUsers(data);
-        setLoading(false); // ← matikan loading ketika data sudah ada
+        setLoading(false);
+        // ← matikan loading ketika data sudah ada
       })
       .catch((err) => console.error("Error fetch users:", err));
   }, []);
@@ -28,8 +67,10 @@ const Users = () => {
 
     return matchSearch && matchRole;
   });
+
   useEffect(() => {
     const token = localStorage.getItem("sistem-token");
+
     if (!token) {
       window.location.href = "/login";
     }
@@ -64,30 +105,87 @@ const Users = () => {
           <table className="table">
             <thead>
               <tr>
-                <th>Nama</th>
-                <th>Identitas</th>
-                <th>Telepon</th>
-                <th>Role</th>
-                <th>Status</th>
-                <th>Aksi</th>
+                <th
+                  colSpan="5"
+                  className="memuat_data"
+                  style={{ textAlign: "start" }}
+                >
+                  Nama
+                </th>
+                <th
+                  colSpan="5"
+                  className="memuat_data"
+                  style={{ textAlign: "start" }}
+                >
+                  Telepon
+                </th>
+                <th
+                  colSpan="5"
+                  className="memuat_data"
+                  style={{ textAlign: "start" }}
+                >
+                  Role
+                </th>
+                <th
+                  colSpan="5"
+                  className="memuat_data"
+                  style={{ textAlign: "start" }}
+                >
+                  Status
+                </th>
+                <th
+                  colSpan="5"
+                  className="memuat_data"
+                  style={{ textAlign: "start" }}
+                >
+                  Aksi
+                </th>
               </tr>
             </thead>
 
             <tbody>
               {filteredUsers.map((user) => (
                 <tr key={user.id}>
-                  <td>{user.nama}</td>
-                  <td>{user.identitas}</td>
-                  <td>{user.telepon}</td>
-                  <td>{user.role}</td>
-                  <td>{user.status ? "Aktif" : "Nonaktif"}</td>
-                  <td>
-                    <button className="btn btn-warning btn-sm">Edit</button>
+                  <td
+                    colSpan="5"
+                    className="memuat_data"
+                    style={{ textAlign: "start" }}
+                  >
+                    {user.nama}
+                  </td>
+                  <td
+                    colSpan="5"
+                    className="memuat_data"
+                    style={{ textAlign: "start" }}
+                  >
+                    {user.telepon}
+                  </td>
+                  <td
+                    colSpan="5"
+                    className="memuat_data"
+                    style={{ textAlign: "start" }}
+                  >
+                    {user.role}
+                  </td>
+                  <td
+                    colSpan="5"
+                    className="memuat_data"
+                    style={{ textAlign: "start" }}
+                  >
+                    {user.status ? "Aktif" : "Nonaktif"}
+                  </td>
+                  <td
+                    colSpan="5"
+                    className="memuat_data"
+                    style={{ textAlign: "start" }}
+                  >
                     <button
-                      className="btn btn-danger btn-sm"
-                      style={{ marginLeft: "6px" }}
+                      className="btn btn-warning btn-sm"
+                      onClick={() =>
+                        openEditModal({ id: user.id, role: user.role })
+                      }
                     >
-                      Hapus
+                      Edit
                     </button>
                   </td>
                 </tr>
@@ -95,7 +193,11 @@ const Users = () => {
 
               {filteredUsers.length === 0 && loading && (
                 <tr>
-                  <td colSpan="6" style={{ textAlign: "center" }}>
+                  <td
+                    colSpan="25  "
+                    className="memuat_data"
+                    style={{ textAlign: "center" }}
+                  >
                     <LoadingDots size={12} color="#fff" />
                   </td>
                 </tr>
@@ -104,6 +206,50 @@ const Users = () => {
           </table>
         </div>
       </div>
+      {editEntry && (
+        <div className="custom-modal-overlay">
+          <div className="custom-modal-centered">
+            <div className="modal-content p-3">
+              <div className="modal-header">
+                <h5 className="modal-title">Edit Entri</h5>
+                <button
+                  type="button"
+                  className="btn-close"
+                  aria-label="Close"
+                  onClick={closeEditModal}
+                >
+                  X
+                </button>
+              </div>
+
+              <div className="modal-body">
+                <label className="form-label">Role</label>
+                <select
+                  className="form-control mb-3"
+                  name="role"
+                  value={editEntry.role}
+                  onChange={handleEditChange}
+                >
+                  <option value="Admin">Admin</option>
+                  <option value="User">User</option>
+                </select>
+              </div>
+
+              <div className="modal-footer">
+                <button
+                  className="btn btn-primary me-2"
+                  onClick={saveEditChanges}
+                >
+                  Simpan Perubahan
+                </button>
+                <button className="btn btn-secondary" onClick={closeEditModal}>
+                  Batal
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

@@ -1,11 +1,35 @@
+import { useState } from "react";
+import { useEffect } from "react";
+
 const Sidebar = ({ open, onClose }) => {
-  const resp = localStorage.getItem("sistem-token");
-  const user = JSON.parse(resp);
   const logout = () => {
     localStorage.removeItem("sistem-token"); // hapus token
     window.location.href = "/login"; // arahkan ke login
   };
 
+  const [user, setUser] = useState({});
+  useEffect(() => {
+    const checkToken = async () => {
+      const token = localStorage.getItem("sistem-token");
+
+      if (!token) {
+        window.location.href = "/login";
+        return;
+      }
+
+      if (token) {
+        try {
+          const parsed = JSON.parse(token);
+          setUser(parsed);
+        } catch (err) {
+          console.error("Token tidak valid", err);
+          window.location.href = "/login";
+        }
+      }
+    };
+
+    checkToken();
+  }, []);
   return (
     open && (
       <nav className="container nav-menu">
@@ -42,22 +66,27 @@ const Sidebar = ({ open, onClose }) => {
           <span className="nav-icon">📝</span>
           <span className="nav-text">Entri Baru</span>
         </button>
+        {user.role === "Admin" && (
+          <button
+            className="nav-item"
+            onClick={() => (window.location.href = "/all-entri")}
+          >
+            <span className="nav-icon">📖</span>
+            <span className="nav-text">Semua Entri</span>
+          </button>
+        )}
 
-        <button
-          className="nav-item"
-          onClick={() => (window.location.href = "/all-entri")}
-        >
-          <span className="nav-icon">📖</span>
-          <span className="nav-text">Semua Entri</span>
-        </button>
-        <button
-          className="nav-item"
-          id="usersMenuItem"
-          onClick={() => (window.location.href = "/users")}
-        >
-          <span className="nav-icon">👥</span>
-          <span className="nav-text">Kelola User</span>
-        </button>
+        {user.role === "Admin" && (
+          <button
+            className="nav-item"
+            id="usersMenuItem"
+            onClick={() => (window.location.href = "/users")}
+          >
+            <span className="nav-icon">👥</span>
+            <span className="nav-text">Kelola User</span>
+          </button>
+        )}
+
         <button
           className="nav-item"
           onClick={() => (window.location.href = "/settings")}

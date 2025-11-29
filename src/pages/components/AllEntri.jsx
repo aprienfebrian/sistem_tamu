@@ -28,7 +28,7 @@ const AllEntri = () => {
       jumlah_tamu: entry.jumlah_tamu || "",
       keperluan: entry.keperluan || "",
       bertemu: entry.bertemu || "",
-      status: entry.status || "pending",
+      status: entry.status || "Pending",
     });
   };
 
