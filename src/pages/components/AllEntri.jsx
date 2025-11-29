@@ -4,9 +4,36 @@ const AllEntri = () => {
   const [entries, setEntries] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  // Modal state
+  const [selectedEntry, setSelectedEntry] = useState(null);
+  const [editEntry, setEditEntry] = useState(null);
+
+  const openViewModal = (entry) => setSelectedEntry(entry);
+  const closeViewModal = () => setSelectedEntry(null);
+
+  const openEditModal = (entry) => setEditEntry({ ...entry });
+  const closeEditModal = () => setEditEntry(null);
+
+  const handleEditChange = (e) => {
+    setEditEntry({ ...editEntry, [e.target.name]: e.target.value });
+  };
+
+  const saveEditChanges = () => {
+    setEntries((prev) =>
+      prev.map((item) => (item.id === editEntry.id ? editEntry : item))
+    );
+    closeEditModal();
+  };
+
+  const deleteEntry = (id) => {
+    if (window.confirm("Yakin ingin menghapus data ini?")) {
+      setEntries(entries.filter((item) => item.id !== id));
+    }
+  };
+
+  // Export CSV
   const exportCSV = () => {
     if (entries.length === 0) return alert("Tidak ada data untuk diexport!");
-
     const header = [
       "Tanggal",
       "Nama",
@@ -30,7 +57,6 @@ const AllEntri = () => {
     ]);
 
     const csvContent = [header, ...rows].map((row) => row.join(",")).join("\n");
-
     const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
     const url = URL.createObjectURL(blob);
 
@@ -48,31 +74,6 @@ const AllEntri = () => {
       <html>
         <head>
           <title>Export PDF</title>
-          <style>
-            table { width: 100%; border-collapse: collapse; }
-            th, td { border: 1px solid black; padding: 8px; font-size: 12px; }
-            th { background: #f2f2f2ff; }
-          </style>
-        </head>
-        <body>
-          <h3>Data Buku Tamu</h3>
-          ${printContent}
-        </body>
-      </html>
-    `);
-
-    newWindow.document.close();
-    newWindow.print();
-  };
-
-  const printTable = () => {
-    const printContent = document.querySelector(".table-container").innerHTML;
-    const newWindow = window.open("", "", "width=900,height=700");
-
-    newWindow.document.write(`
-      <html>
-        <head>
-          <title>Print Data</title>
           <style>
             table { width: 100%; border-collapse: collapse; }
             th, td { border: 1px solid black; padding: 8px; font-size: 12px; }
@@ -96,18 +97,7 @@ const AllEntri = () => {
       .then((data) => {
         setEntries(data);
         setLoading(false);
-      })
-      .catch((err) => {
-        console.error("Error fetching entries:", err);
-        setLoading(false);
       });
-  }, []);
-
-  useEffect(() => {
-    const token = localStorage.getItem("sistem-token");
-    if (!token) {
-      window.location.href = "/login";
-    }
   }, []);
 
   return (
@@ -119,39 +109,9 @@ const AllEntri = () => {
           <button onClick={exportCSV} className="btn btn-success btn-sm">
             📊 Export CSV
           </button>
-
           <button onClick={exportPDF} className="btn btn-success btn-sm">
             📄 Export PDF
           </button>
-
-          <button onClick={printTable} className="btn btn-primary btn-sm">
-            🖨️ Print
-          </button>
-        </div>
-
-        <div className="search-filter">
-          <div className="search-box">
-            <input
-              type="text"
-              className="form-control"
-              id="searchEntries"
-              placeholder="🔍 Cari nama, institusi, atau keperluan..."
-            />
-          </div>
-
-          <select className="form-control filter-select" id="filterStatus">
-            <option value="">Semua Status</option>
-            <option value="pending">Pending</option>
-            <option value="approved">Approved</option>
-            <option value="completed">Selesai</option>
-          </select>
-
-          <select className="form-control filter-select" id="filterDate">
-            <option value="">Semua Tanggal</option>
-            <option value="today">Hari Ini</option>
-            <option value="week">Minggu Ini</option>
-            <option value="month">Bulan Ini</option>
-          </select>
         </div>
 
         <div className="table-container">
@@ -161,7 +121,7 @@ const AllEntri = () => {
                 <th>Tanggal</th>
                 <th>Nama</th>
                 <th>Identitas</th>
-                <th>Jumlah Tamu</th>
+                <th>Jumlah</th>
                 <th>Institusi</th>
                 <th>Keperluan</th>
                 <th>Bertemu</th>
@@ -170,14 +130,10 @@ const AllEntri = () => {
               </tr>
             </thead>
 
-            <tbody id="entriesTable">
+            <tbody>
               {loading ? (
                 <tr>
                   <td colSpan="9">Memuat data...</td>
-                </tr>
-              ) : entries.length === 0 ? (
-                <tr>
-                  <td colSpan="9">Tidak ada data.</td>
                 </tr>
               ) : (
                 entries.map((e) => (
@@ -191,7 +147,26 @@ const AllEntri = () => {
                     <td>{e.bertemu}</td>
                     <td>{e.status}</td>
                     <td>
-                      <button className="btn btn-sm btn-primary">Edit</button>
+                      <button
+                        className="btn btn-sm btn-info me-1"
+                        onClick={() => openViewModal(e)}
+                      >
+                        Lihat
+                      </button>
+
+                      <button
+                        className="btn btn-sm btn-primary me-1"
+                        onClick={() => openEditModal(e)}
+                      >
+                        Edit
+                      </button>
+
+                      <button
+                        className="btn btn-sm btn-danger"
+                        onClick={() => deleteEntry(e.id)}
+                      >
+                        Hapus
+                      </button>
                     </td>
                   </tr>
                 ))
@@ -200,6 +175,63 @@ const AllEntri = () => {
           </table>
         </div>
       </div>
+
+      {/* Modal Lihat */}
+      {selectedEntry && (
+        <div className="modal show d-block" tabIndex="-1">
+          <div className="modal-dialog">
+            <div className="modal-content p-3">
+              <h4>Detail Entri</h4>
+              <p><strong>Nama:</strong> {selectedEntry.nama}</p>
+              <p><strong>Institusi:</strong> {selectedEntry.institusi}</p>
+              <p><strong>Keperluan:</strong> {selectedEntry.keperluan}</p>
+              <button className="btn btn-secondary" onClick={closeViewModal}>
+                Tutup
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal Edit */}
+      {editEntry && (
+        <div className="modal show d-block" tabIndex="-1">
+          <div className="modal-dialog">
+            <div className="modal-content p-3">
+              <h4>Edit Entri</h4>
+
+              <input
+                className="form-control mb-2"
+                name="nama"
+                value={editEntry.nama}
+                onChange={handleEditChange}
+              />
+
+              <input
+                className="form-control mb-2"
+                name="institusi"
+                value={editEntry.institusi}
+                onChange={handleEditChange}
+              />
+
+              <textarea
+                className="form-control mb-2"
+                name="keperluan"
+                value={editEntry.keperluan}
+                onChange={handleEditChange}
+              />
+
+              <button className="btn btn-primary me-2" onClick={saveEditChanges}>
+                Simpan
+              </button>
+
+              <button className="btn btn-secondary" onClick={closeEditModal}>
+                Batal
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
