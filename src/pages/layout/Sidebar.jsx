@@ -27,16 +27,6 @@ const Sidebar = ({ open, onClose }) => {
           </div>
         </div>
 
-        <div className="nav-item theme-switch-container">
-          <span className="nav-text" id="themeLabel">
-            Mode Gelap
-          </span>
-          <label className="switch">
-            <input type="checkbox" id="themeToggle" />
-            <span className="slider round"></span>
-          </label>
-        </div>
-
         <button
           className="nav-item active"
           onClick={() => (window.location.href = "/")}
