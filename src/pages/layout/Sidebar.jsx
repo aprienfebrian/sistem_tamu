@@ -52,13 +52,7 @@ const Sidebar = ({ open, onClose }) => {
           <span className="nav-icon">📝</span>
           <span className="nav-text">Entri Baru</span>
         </button>
-        <button
-          className="nav-item"
-          onClick={() => (window.location.href = "/my-entri")}
-        >
-          <span className="nav-icon">👀</span>
-          <span className="nav-text">Entri Saya</span>
-        </button>
+
         <button
           className="nav-item"
           onClick={() => (window.location.href = "/all-entri")}

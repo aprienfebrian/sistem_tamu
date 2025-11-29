@@ -9,7 +9,7 @@ const Header = () => {
   return (
     <>
       <header className="header">
-        <div className="container">
+        {/* <div className="container"> */}
           <div className="header-content">
             <div className="logo">📖 Buku Tamu Online</div>
 
@@ -18,7 +18,7 @@ const Header = () => {
               <span></span>
               <span></span>
             </button>
-          </div>
+          {/* </div> */}
         </div>
       </header>
       <Sidebar open={open} onClose={() => setOpen(false)} />

@@ -1,5 +1,5 @@
 import "../../App.css";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 const NewEntri = () => {
   const [form, setForm] = useState({
@@ -55,12 +55,6 @@ const NewEntri = () => {
       alert("Gagal menambah entri");
     }
   };
-  useEffect(() => {
-    const token = localStorage.getItem("sistem-token");
-    if (!token) {
-      window.location.href = "/login";
-    }
-  }, []);
 
   return (
     <div className="container">
