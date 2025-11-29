@@ -5,52 +5,51 @@ const AllEntri = () => {
   const [loading, setLoading] = useState(true);
 
   const exportCSV = () => {
-  if (entries.length === 0) return alert("Tidak ada data untuk diexport!");
+    if (entries.length === 0) return alert("Tidak ada data untuk diexport!");
 
-  // Buat header CSV
-  const header = [
-    "Tanggal",
-    "Nama",
-    "Identitas",
-    "Jumlah Tamu",
-    "Institusi",
-    "Keperluan",
-    "Bertemu",
-    "Status"
-  ];
+    // Buat header CSV
+    const header = [
+      "Tanggal",
+      "Nama",
+      "Identitas",
+      "Jumlah Tamu",
+      "Institusi",
+      "Keperluan",
+      "Bertemu",
+      "Status",
+    ];
 
-  // Convert array entries → CSV rows
-  const rows = entries.map(e => [
-    new Date(e.tanggal).toLocaleString(),
-    e.nama,
-    e.identitas,
-    e.jumlah_tamu,
-    e.institusi,
-    e.keperluan,
-    e.bertemu,
-    e.status
-  ]);
+    // Convert array entries → CSV rows
+    const rows = entries.map((e) => [
+      new Date(e.tanggal).toLocaleString(),
+      e.nama,
+      e.identitas,
+      e.jumlah_tamu,
+      e.institusi,
+      e.keperluan,
+      e.bertemu,
+      e.status,
+    ]);
 
-  // Gabung header + rows
-  const csvContent =
-    [header, ...rows].map(row => row.join(",")).join("\n");
+    // Gabung header + rows
+    const csvContent = [header, ...rows].map((row) => row.join(",")).join("\n");
 
-  // Buat blob file
-  const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
-  const url = URL.createObjectURL(blob);
+    // Buat blob file
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
 
-  // Buat link download
-  const link = document.createElement("a");
-  link.href = url;
-  link.download = "data_buku_tamu.csv";
-  link.click();
-};
+    // Buat link download
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = "data_buku_tamu.csv";
+    link.click();
+  };
 
-const exportPDF = () => {
-  const printContent = document.querySelector(".table-container").innerHTML;
-  const newWindow = window.open("", "", "width=900,height=700");
+  const exportPDF = () => {
+    const printContent = document.querySelector(".table-container").innerHTML;
+    const newWindow = window.open("", "", "width=900,height=700");
 
-  newWindow.document.write(`
+    newWindow.document.write(`
     <html>
       <head>
         <title>Export PDF</title>
@@ -67,9 +66,9 @@ const exportPDF = () => {
     </html>
   `);
 
-  newWindow.document.close();
-  newWindow.print();
-};
+    newWindow.document.close();
+    newWindow.print();
+  };
 
   useEffect(() => {
     fetch("https://backend-sistem-tamu.vercel.app/entri")
@@ -84,19 +83,34 @@ const exportPDF = () => {
       });
   }, []);
 
+  useEffect(() => {
+    const token = localStorage.getItem("sistem-token");
+    if (!token) {
+      window.location.href = "/login";
+    }
+  }, []);
+
   return (
     <div className="container">
       <div className="card">
         <h2 className="card-title">Semua Entri Buku Tamu</h2>
 
         <div className="export-btns">
-<button onClick={exportCSV} className="btn btn-success btn-sm">
-  📊 Export CSV
-</button>
+          <button onClick={exportCSV} className="btn btn-success btn-sm">
+            📊 Export CSV
+          </button>
           <button onClick={exportPDF} className="btn btn-success btn-sm">
+<<<<<<< HEAD
   📄 Export PDF
 </button>
                  </div>
+=======
+            📄 Export PDF
+          </button>
+
+          <button className="btn btn-primary btn-sm">🖨️ Print</button>
+        </div>
+>>>>>>> 881927ae8ebb534da1f2f5027db7628d8cb95c78
 
         <div className="search-filter">
           <div className="search-box">
@@ -172,6 +186,3 @@ const exportPDF = () => {
 };
 
 export default AllEntri;
-
-
-

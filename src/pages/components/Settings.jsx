@@ -1,3 +1,4 @@
+<<<<<<< HEAD
   import React from "react";
 
   const Settings = () => {
@@ -15,6 +16,31 @@
                 required
               />
             </div>
+=======
+import React, { useEffect } from "react";
+
+const Settings = () => {
+  useEffect(() => {
+    const token = localStorage.getItem("sistem-token");
+    if (!token) {
+      window.location.href = "/login";
+    }
+  }, []);
+  return (
+    <div class="container">
+      <div className="card">
+        <h2 className="card-title">Pengaturan Profil</h2>
+        <form id="profileForm">
+          <div className="form-group">
+            <label className="form-label">Nama Lengkap</label>
+            <input
+              type="text"
+              className="form-control"
+              id="profileName"
+              required
+            />
+          </div>
+>>>>>>> 881927ae8ebb534da1f2f5027db7628d8cb95c78
 
             <div className="form-group">
               <label className="form-label">Identitas</label>

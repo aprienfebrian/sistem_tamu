@@ -1,15 +1,20 @@
 import React, { useEffect, useState } from "react";
+import LoadingDots from "../../utils/Loading";
 
 const Users = () => {
   const [users, setUsers] = useState([]);
   const [search, setSearch] = useState("");
   const [filterRole, setFilterRole] = useState("");
+  const [loading, setLoading] = useState(true);
 
   // FETCH DATA
   useEffect(() => {
     fetch("https://backend-sistem-tamu.vercel.app/users")
       .then((res) => res.json())
-      .then((data) => setUsers(data))
+      .then((data) => {
+        setUsers(data);
+        setLoading(false); // ← matikan loading ketika data sudah ada
+      })
       .catch((err) => console.error("Error fetch users:", err));
   }, []);
 
@@ -23,6 +28,12 @@ const Users = () => {
 
     return matchSearch && matchRole;
   });
+  useEffect(() => {
+    const token = localStorage.getItem("sistem-token");
+    if (!token) {
+      window.location.href = "/login";
+    }
+  }, []);
 
   return (
     <div className="container">
@@ -82,10 +93,10 @@ const Users = () => {
                 </tr>
               ))}
 
-              {filteredUsers.length === 0 && (
+              {filteredUsers.length === 0 && loading && (
                 <tr>
                   <td colSpan="6" style={{ textAlign: "center" }}>
-                    Tidak ada data.
+                    <LoadingDots size={12} color="#fff" />
                   </td>
                 </tr>
               )}

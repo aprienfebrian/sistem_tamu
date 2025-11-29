@@ -8,7 +8,6 @@ import Layout from "./Layout.jsx";
 import App from "./pages/App.jsx";
 import Login from "./pages/auth/Login.jsx";
 import Register from "./pages/auth/Register.jsx";
-import Logout from "./pages/auth/Logout.jsx"; // <-- TAMBAHKAN INI
 
 import NewEntri from "./pages/components/NewEntri.jsx";
 import MyEntri from "./pages/components/MyEntri.jsx";
@@ -23,7 +22,6 @@ createRoot(document.getElementById("root")).render(
         {/* Routes tanpa layout */}
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
-        <Route path="/logout" element={<Logout />} /> {/* <-- TAMBAHKAN INI */}
 
         {/* Routes dengan layout */}
         <Route path="/" element={<Layout />}>
