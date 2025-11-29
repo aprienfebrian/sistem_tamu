@@ -96,9 +96,7 @@ const exportPDF = () => {
           <button onClick={exportPDF} className="btn btn-success btn-sm">
   📄 Export PDF
 </button>
-
-          <button className="btn btn-primary btn-sm">🖨️ Print</button>
-        </div>
+                 </div>
 
         <div className="search-filter">
           <div className="search-box">
