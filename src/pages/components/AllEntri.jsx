@@ -194,44 +194,58 @@ const AllEntri = () => {
       )}
 
       {/* Modal Edit */}
-      {editEntry && (
-        <div className="modal show d-block" tabIndex="-1">
-          <div className="modal-dialog">
-            <div className="modal-content p-3">
-              <h4>Edit Entri</h4>
+{editEntry && (
+  <div className="modal show d-block" tabIndex="-1">
+    <div className="modal-dialog">
+      <div className="modal-content p-3">
+        <h4>Edit Entri</h4>
 
-              <input
-                className="form-control mb-2"
-                name="nama"
-                value={editEntry.nama}
-                onChange={handleEditChange}
-              />
+        <input
+          className="form-control mb-2"
+          name="nama"
+          value={editEntry.nama}
+          onChange={handleEditChange}
+        />
 
-              <input
-                className="form-control mb-2"
-                name="institusi"
-                value={editEntry.institusi}
-                onChange={handleEditChange}
-              />
+        <input
+          className="form-control mb-2"
+          name="institusi"
+          value={editEntry.institusi}
+          onChange={handleEditChange}
+        />
 
-              <textarea
-                className="form-control mb-2"
-                name="keperluan"
-                value={editEntry.keperluan}
-                onChange={handleEditChange}
-              />
+        <textarea
+          className="form-control mb-2"
+          name="keperluan"
+          value={editEntry.keperluan}
+          onChange={handleEditChange}
+        />
 
-              <button className="btn btn-primary me-2" onClick={saveEditChanges}>
-                Simpan
-              </button>
+        {/* === SELECT STATUS === */}
+        <label className="form-label">Status</label>
+        <select
+          className="form-control mb-3"
+          name="status"
+          value={editEntry.status}
+          onChange={handleEditChange}
+        >
+          <option value="pending">Pending</option>
+          <option value="approved">Approved</option>
+          <option value="selesai">Selesai</option>
+        </select>
 
-              <button className="btn btn-secondary" onClick={closeEditModal}>
-                Batal
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+        <button className="btn btn-primary me-2" onClick={saveEditChanges}>
+          Simpan
+        </button>
+
+        <button className="btn btn-secondary" onClick={closeEditModal}>
+          Batal
+        </button>
+      </div>
+    </div>
+  </div>
+)}
+
     </div>
   );
 };
