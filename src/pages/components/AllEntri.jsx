@@ -4,10 +4,18 @@ const AllEntri = () => {
   const [entries, setEntries] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  // UI search & filter state
+  const [searchTerm, setSearchTerm] = useState("");
+  const [filterStatus, setFilterStatus] = useState("");
+  const [filterDate, setFilterDate] = useState("");
+
   // Modal state
   const [selectedEntry, setSelectedEntry] = useState(null);
   const [editEntry, setEditEntry] = useState(null);
 
+  // ==========================
+  // MODAL HANDLER
+  // ==========================
   const openViewModal = (entry) => setSelectedEntry(entry);
   const closeViewModal = () => setSelectedEntry(null);
 
@@ -40,9 +48,54 @@ const AllEntri = () => {
     }
   };
 
+  // ==========================
+  // FILTER DATE RANGE
+  // ==========================
+  const filterByDateRange = (date) => {
+    const now = new Date();
+    const itemDate = new Date(date);
+
+    if (filterDate === "today") {
+      return itemDate.toDateString() === now.toDateString();
+    }
+
+    if (filterDate === "week") {
+      const startWeek = new Date();
+      startWeek.setDate(now.getDate() - 7);
+      return itemDate >= startWeek && itemDate <= now;
+    }
+
+    if (filterDate === "month") {
+      return (
+        itemDate.getMonth() === now.getMonth() &&
+        itemDate.getFullYear() === now.getFullYear()
+      );
+    }
+
+    return true;
+  };
+
+  // ==========================
+  // MAIN FILTER LOGIC
+  // ==========================
+  const filteredEntries = entries.filter((e) => {
+    const matchSearch =
+      e.nama.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      e.institusi.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      e.keperluan.toLowerCase().includes(searchTerm.toLowerCase());
+
+    const matchStatus = filterStatus === "" || e.status === filterStatus;
+    const matchDate = filterDate === "" || filterByDateRange(e.tanggal);
+
+    return matchSearch && matchStatus && matchDate;
+  });
+
+  // ==========================
   // EXPORT CSV
+  // ==========================
   const exportCSV = () => {
-    if (entries.length === 0) return alert("Tidak ada data untuk diexport!");
+    if (filteredEntries.length === 0)
+      return alert("Tidak ada data untuk diexport!");
 
     const header = [
       "Tanggal",
@@ -55,7 +108,7 @@ const AllEntri = () => {
       "Status",
     ];
 
-    const rows = entries.map((e) => [
+    const rows = filteredEntries.map((e) => [
       new Date(e.tanggal).toLocaleString(),
       e.nama,
       e.identitas,
@@ -76,7 +129,9 @@ const AllEntri = () => {
     link.click();
   };
 
-  // EXPORT PDF
+  // ==========================
+  // EXPORT PDF (PRINT VIEW)
+  // ==========================
   const exportPDF = () => {
     const printContent = document.querySelector(".table-container").innerHTML;
     const newWindow = window.open("", "", "width=900,height=700");
@@ -102,12 +157,13 @@ const AllEntri = () => {
     newWindow.print();
   };
 
-  // FETCH DATA
+  // ==========================
+  // FETCH DATA FROM BACKEND
+  // ==========================
   useEffect(() => {
     fetch("https://backend-sistem-tamu.vercel.app/entri")
       .then((res) => res.json())
       .then((data) => {
-        console.log("DATA FROM API:", data);
         setEntries(data);
         setLoading(false);
       });
@@ -118,15 +174,47 @@ const AllEntri = () => {
       <div className="card">
         <h2 className="card-title">Semua Entri Buku Tamu</h2>
 
+        {/* BUTTON EXPORT */}
         <div className="export-btns mb-3">
           <button onClick={exportCSV} className="btn btn-success btn-sm me-2">
             📊 Export CSV
           </button>
-          <button onClick={exportPDF} className="btn btn-success btn-sm">
+          <button onClick={exportPDF} className="btn btn-success btn-sm me-2">
             📄 Export PDF
           </button>
         </div>
 
+        {/* SEARCH & FILTER */}
+        <div className="search-filter d-flex gap-2 mb-3">
+          <input
+            type="text"
+            className="form-control"
+            placeholder="🔍 Cari nama, institusi, atau keperluan..."
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+
+          <select
+            className="form-control"
+            onChange={(e) => setFilterStatus(e.target.value)}
+          >
+            <option value="">Semua Status</option>
+            <option value="pending">Pending</option>
+            <option value="approved">Approved</option>
+            <option value="selesai">Selesai</option>
+          </select>
+
+          <select
+            className="form-control"
+            onChange={(e) => setFilterDate(e.target.value)}
+          >
+            <option value="">Semua Tanggal</option>
+            <option value="today">Hari Ini</option>
+            <option value="week">Minggu Ini</option>
+            <option value="month">Bulan Ini</option>
+          </select>
+        </div>
+
+        {/* TABLE */}
         <div className="table-container">
           <table className="table">
             <thead>
@@ -148,8 +236,14 @@ const AllEntri = () => {
                 <tr>
                   <td colSpan="9">Memuat data...</td>
                 </tr>
+              ) : filteredEntries.length === 0 ? (
+                <tr>
+                  <td colSpan="9" style={{ textAlign: "center" }}>
+                    Tidak ada data ditemukan.
+                  </td>
+                </tr>
               ) : (
-                entries.map((e) => (
+                filteredEntries.map((e) => (
                   <tr key={e.id}>
                     <td>{new Date(e.tanggal).toLocaleString()}</td>
                     <td>{e.nama}</td>
@@ -189,13 +283,12 @@ const AllEntri = () => {
         </div>
       </div>
 
-      {/* == MODAL LIHAT == */}
+      {/* MODAL LIHAT */}
       {selectedEntry && (
-        <div className="modal show d-block" tabIndex="-1">
+        <div className="modal show d-block">
           <div className="modal-dialog">
             <div className="modal-content p-3">
               <h4>Detail Entri</h4>
-
               <p><strong>Nama:</strong> {selectedEntry.nama}</p>
               <p><strong>Institusi:</strong> {selectedEntry.institusi}</p>
               <p><strong>Keperluan:</strong> {selectedEntry.keperluan}</p>
@@ -208,9 +301,9 @@ const AllEntri = () => {
         </div>
       )}
 
-      {/* == MODAL EDIT == */}
+      {/* MODAL EDIT */}
       {editEntry && (
-        <div className="modal show d-block" tabIndex="-1">
+        <div className="modal show d-block">
           <div className="modal-dialog">
             <div className="modal-content p-3">
               <h4>Edit Entri</h4>
@@ -236,7 +329,7 @@ const AllEntri = () => {
                 onChange={handleEditChange}
               />
 
-              <label className="form-label">Status</label>
+              <label>Status</label>
               <select
                 className="form-control mb-3"
                 name="status"
