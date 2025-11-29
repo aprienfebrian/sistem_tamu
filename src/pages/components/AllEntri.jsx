@@ -49,6 +49,17 @@ const AllEntri = () => {
   };
 
   // ==========================
+  // APPROVE ENTRY (new)
+  // ==========================
+  const approveEntry = (id) => {
+    setEntries((prev) =>
+      prev.map((item) =>
+        item.id === id ? { ...item, status: "approved" } : item
+      )
+    );
+  };
+
+  // ==========================
   // FILTER DATE RANGE
   // ==========================
   const filterByDateRange = (date) => {
@@ -130,7 +141,7 @@ const AllEntri = () => {
   };
 
   // ==========================
-  // EXPORT PDF (PRINT VIEW)
+  // EXPORT PDF
   // ==========================
   const exportPDF = () => {
     const printContent = document.querySelector(".table-container").innerHTML;
@@ -158,7 +169,7 @@ const AllEntri = () => {
   };
 
   // ==========================
-  // FETCH DATA FROM BACKEND
+  // FETCH DATA
   // ==========================
   useEffect(() => {
     fetch("https://backend-sistem-tamu.vercel.app/entri")
@@ -267,6 +278,16 @@ const AllEntri = () => {
                       >
                         Edit
                       </button>
+
+                      {/* Tombol APPROVED */}
+                      {e.status === "pending" && (
+                        <button
+                          className="btn btn-sm btn-success me-1"
+                          onClick={() => approveEntry(e.id)}
+                        >
+                          Approved
+                        </button>
+                      )}
 
                       <button
                         className="btn btn-sm btn-danger"
