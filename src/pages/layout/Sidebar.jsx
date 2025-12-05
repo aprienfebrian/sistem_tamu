@@ -3,8 +3,15 @@ import { useEffect } from "react";
 
 const Sidebar = ({ open, onClose }) => {
   const logout = () => {
-    localStorage.removeItem("sistem-token"); // hapus token
-    window.location.href = "/login"; // arahkan ke login
+    const confirmLogout = window.confirm("Apakah Anda yakin ingin logout?");
+
+    if (!confirmLogout) {
+      return; // kalau pilih NO, tidak lakukan apa-apa
+    }
+
+    // kalau YES → hapus token dan alihkan ke login
+    localStorage.removeItem("sistem-token");
+    window.location.href = "/login";
   };
 
   const [user, setUser] = useState({});

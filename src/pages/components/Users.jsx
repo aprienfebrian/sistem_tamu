@@ -12,6 +12,28 @@ const Users = () => {
     setEditEntry({ id, role });
     console.log(editEntry);
   };
+  const deleteUser = async (id) => {
+    if (window.confirm("Yakin ingin menghapus data ini secara permanen?")) {
+      try {
+        const response = await fetch(
+          `https://backend-sistem-tamu.vercel.app/users/${Number(id)}`,
+          {
+            method: "DELETE",
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error("Gagal menghapus data dari server");
+        }
+
+        // Update state lokal setelah berhasil
+        alert("Data berhasil dihapus!");
+      } catch (err) {
+        console.error("Gagal menghapus entri:", err);
+        alert("Gagal menghapus data! Silakan cek koneksi atau server.");
+      }
+    }
+  };
   const closeEditModal = () => setEditEntry(null);
 
   const handleEditChange = (e) => {
@@ -186,6 +208,12 @@ const Users = () => {
                       }
                     >
                       Edit
+                    </button>
+                    <button
+                      className="btn btn-sm btn-danger"
+                      onClick={() => deleteUser(user.id)}
+                    >
+                      Hapus
                     </button>
                   </td>
                 </tr>
