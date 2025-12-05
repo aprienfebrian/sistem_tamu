@@ -64,7 +64,7 @@ const Login = () => {
                 className="form-control"
                 name="email"
                 required
-                placeholder="admin@buku.com / user@buku.com"
+                placeholder=""
                 value={form.email}
                 onChange={handleChange}
               />
@@ -77,7 +77,7 @@ const Login = () => {
                 className="form-control"
                 required
                 name="password"
-                placeholder="admin123 / user123"
+                placeholder=""
                 value={form.password}
                 onChange={handleChange}
               />
