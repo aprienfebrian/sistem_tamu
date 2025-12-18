@@ -48,26 +48,47 @@ const Settings = () => {
 
   const handleSubmitProfile = async (e) => {
     e.preventDefault();
+
     const { id, ...payload } = form;
 
     console.log("payload", payload);
 
     try {
+      const token = localStorage.getItem("sistem-token");
+
       const response = await fetch(
         `https://backend-sistem-tamu.vercel.app/users/${Number(id)}`,
         {
           method: "PUT",
-          headers: { "Content-Type": "application/json" },
+          headers: {
+            "Content-Type": "application/json",
+            // aktifkan jika backend butuh auth
+            // Authorization: `Bearer ${token}`,
+          },
           body: JSON.stringify(payload),
         }
       );
       console.log(response);
 
       if (!response.ok) {
-        throw new Error("Gagal menyimpan perubahan ke server");
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Gagal menyimpan perubahan");
       }
+
+      const result = await response.json();
+
+      alert("✅ Profil berhasil diperbarui");
+
+      setForm({
+        id: result.id,
+        nama: result.nama ?? "",
+        telepon: result.telepon ?? "",
+        email: result.email ?? "",
+        alamat: result.alamat ?? "",
+      });
     } catch (error) {
-      console.log(error);
+      console.error(error);
+      alert("❌ " + error.message);
     }
     // TODO: panggil API update profile di sini
   };

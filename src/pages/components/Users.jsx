@@ -81,11 +81,14 @@ const Users = () => {
 
   // FILTER DATA
   const filteredUsers = users.filter((u) => {
-    const matchSearch =
-      u.nama.toLowerCase().includes(search.toLowerCase()) ||
-      u.identitas.toLowerCase().includes(search.toLowerCase());
+    const keyword = search.toLowerCase();
 
-    const matchRole = filterRole ? u.role === filterRole : true;
+    const matchSearch =
+      u.nama?.toLowerCase().includes(keyword) ||
+      u.email?.toLowerCase().includes(keyword) ||
+      u.telepon?.toLowerCase().includes(keyword);
+
+    const matchRole = filterRole === "" || u.role === filterRole;
 
     return matchSearch && matchRole;
   });
@@ -115,11 +118,12 @@ const Users = () => {
 
           <select
             className="form-control filter-select"
+            value={filterRole}
             onChange={(e) => setFilterRole(e.target.value)}
           >
             <option value="">Semua Role</option>
-            <option value="admin">Admin</option>
-            <option value="user">User</option>
+            <option value="Admin">Admin</option>
+            <option value="User">User</option>
           </select>
         </div>
 
@@ -221,12 +225,16 @@ const Users = () => {
 
               {filteredUsers.length === 0 && loading && (
                 <tr>
-                  <td
-                    colSpan="25  "
-                    className="memuat_data"
-                    style={{ textAlign: "center" }}
-                  >
+                  <td colSpan="25" style={{ textAlign: "center" }}>
                     <LoadingDots size={12} color="#fff" />
+                  </td>
+                </tr>
+              )}
+
+              {!loading && filteredUsers.length === 0 && (
+                <tr>
+                  <td colSpan="25" style={{ textAlign: "center" }}>
+                    Data tidak ditemukan
                   </td>
                 </tr>
               )}

@@ -132,25 +132,24 @@ const AllEntri = () => {
   // MAIN FILTER LOGIC
   // ==========================
   const filteredEntries = entries.filter((e) => {
-    // Pastikan e.nama, e.institusi, e.keperluan tidak undefined
-    const nama = e.nama || "";
-    const institusi = e.institusi || "";
-    const keperluan = e.keperluan || "";
-    const telepon = e.telepon || "";
-    const bertemu = e.bertemu || "";
-    const jumlah_tamu = e.jumlah_tamu || "";
-    const status = e.status || "Pending"; // Default status jika kosong
+    const keyword = searchTerm.toLowerCase();
+
+    const nama = (e.nama || "").toLowerCase();
+    const institusi = (e.institusi || "").toLowerCase();
+    const keperluan = (e.keperluan || "").toLowerCase();
+    const status = e.status || "Pending";
     const tanggal = e.tanggal;
 
+    // 🔍 SEARCH hanya nama, institusi, keperluan
     const matchSearch =
-      nama.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      institusi.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      telepon.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      jumlah_tamu.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      bertemu.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      keperluan.toLowerCase().includes(searchTerm.toLowerCase());
+      nama.includes(keyword) ||
+      institusi.includes(keyword) ||
+      keperluan.includes(keyword);
 
+    // 🏷 FILTER STATUS
     const matchStatus = filterStatus === "" || status === filterStatus;
+
+    // 📅 FILTER TANGGAL
     const matchDate = filterDate === "" || filterByDateRange(tanggal);
 
     return matchSearch && matchStatus && matchDate;
@@ -287,6 +286,7 @@ const AllEntri = () => {
               type="text"
               className="form-control"
               placeholder="🔍 Cari nama, institusi, atau keperluan..."
+              value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
 
